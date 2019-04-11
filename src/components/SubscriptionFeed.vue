@@ -32,8 +32,65 @@
         </v-container>
       </v-flex>
       <v-btn fixed dark fab bottom right color="red">
-        <v-icon>add</v-icon>
+        <v-icon @click="showDialog">add</v-icon>
       </v-btn>
+      <v-dialog v-model="dialog" persistent max-width="600px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">User Profile</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container grid-list-md>
+              <v-layout wrap>
+                <v-flex xs12>
+                  <v-text-field v-model="headline" label="Headline*" required></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field v-model="thumbnailUrl" label="Thumbnail Url*" required></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field v-model="channel" label="Channel Name*" required></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6>
+                  <v-menu
+                    ref="menu"
+                    v-model="menu"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    :return-value.sync="date"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        v-model="date"
+                        label="Picker in menu"
+                        prepend-icon="event"
+                        readonly
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="date" no-title scrollable>
+                      <v-spacer></v-spacer>
+                      <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
+                      <v-btn flat color="primary" @click="$refs.menu.save(date)">OK</v-btn>
+                    </v-date-picker>
+                  </v-menu>
+                </v-flex>
+              </v-layout>
+            </v-container>
+            <small>*indicates required field</small>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" flat @click="dialog = false">Close</v-btn>
+            <v-btn color="blue darken-1" flat @click="uploadVideo">Save</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-layout>
   </v-container>
 </template>
@@ -55,8 +112,32 @@ export default {
           channel: "Unsplash",
           uploadDate: "12 April 2019"
         }
-      ]
+      ],
+      dialog: false,
+      date: new Date().toISOString().substr(0, 10),
+      menu: false,
+      thumbnailUrl: "",
+      channel: "",
+      headline: ""
     };
+  },
+  methods: {
+    showDialog() {
+      this.dialog = true;
+    },
+    uploadVideo() {
+      this.videos.push({
+        headline: this.headline,
+        thumbnail: this.thumbnailUrl,
+        channel: this.channel,
+        uploadDate: this.date
+      }),
+      this.headline = "";
+      this.thumbnailUrl = "";
+      this.channel = "";
+      this.date = new Date().toISOString().substr(0, 10);
+      this.dialog = false;
+    }
   }
 };
 </script>
