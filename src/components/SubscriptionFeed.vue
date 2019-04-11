@@ -96,30 +96,35 @@
 </template>
 
 <script>
+import firebase from '../Firebase';
+
 export default {
   data() {
     return {
-      videos: [
-        {
-          thumbnail: "https://cdn.vuetifyjs.com/images/cards/docks.jpg",
-          headline: "Top 10 Australian beaches",
-          channel: "Mother Earth",
-          uploadDate: "12 Jan 2019"
-        },
-        {
-          thumbnail: "https://picsum.photos/200/300/?image=1012",
-          headline: "Unsplash Issue 12/4/2019",
-          channel: "Unsplash",
-          uploadDate: "12 April 2019"
-        }
-      ],
+      videos: [],
       dialog: false,
       date: new Date().toISOString().substr(0, 10),
       menu: false,
       thumbnailUrl: "",
       channel: "",
-      headline: ""
+      headline: "",
+      ref: firebase.firestore().collection('video')
     };
+  },
+  created() {
+    this.ref.onSnapshot((querySnapshot) => {
+      this.videos = [];
+      querySnapshot.forEach((doc) => {
+        const videoData = doc.data();
+        this.videos.push({
+          id: doc.id,
+          thumbnail: videoData.thumbnail,
+          headline: videoData.title,
+          channel: videoData.channel,
+          uploadDate: videoData.date
+        });
+      });
+    });
   },
   methods: {
     showDialog() {
