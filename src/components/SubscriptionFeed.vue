@@ -119,9 +119,9 @@ export default {
         this.videos.push({
           id: doc.id,
           thumbnail: videoData.thumbnail,
-          headline: videoData.title,
+          headline: videoData.headline,
           channel: videoData.channel,
-          uploadDate: videoData.date
+          uploadDate: videoData.uploadDate
         });
       });
     });
@@ -131,17 +131,20 @@ export default {
       this.dialog = true;
     },
     uploadVideo() {
-      this.videos.push({
+      this.ref.add({
         headline: this.headline,
         thumbnail: this.thumbnailUrl,
         channel: this.channel,
         uploadDate: this.date
-      }),
+      }).then((docRef) => {
       this.headline = "";
       this.thumbnailUrl = "";
       this.channel = "";
       this.date = new Date().toISOString().substr(0, 10);
       this.dialog = false;
+      }).catch((error) => {
+        alert("Error adding video: ", error);
+      });;
     }
   }
 };
