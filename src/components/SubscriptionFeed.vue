@@ -4,28 +4,22 @@
       <v-flex xs12>
         <v-container grid-list-12 fluid>
           <v-layout row wrap>
-            <v-flex xl3 lg4 md6 xs12 v-for="v in videos" :key="v">
+            <v-flex xl3 lg4 md6 xs12 v-for="(v, i) in videos" :key="i">
               <v-card class="video-container">
-                <v-img
-                  class="white--text"
-                  height="200px"
-                  src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
-                >
+                <v-img class="white--text" height="200px" :src="v.thumbnail">
                   <v-container fill-height fluid>
                     <v-layout fill-height>
                       <v-flex xs12 align-end flexbox>
-                        <span class="headline">Top 10 Australian beaches</span>
+                        <span class="headline">{{ v.headline }}</span>
                       </v-flex>
                     </v-layout>
                   </v-container>
                 </v-img>
                 <v-card-title>
                   <div>
-                    <span class="grey--text">Number 10</span>
+                    <span class="grey--text">{{ v.uploadDate }}</span>
                     <br>
-                    <span>Whitehaven Beach</span>
-                    <br>
-                    <span>Whitsunday Island, Whitsunday Islands</span>
+                    <span>{{ v.channel }}</span>
                   </div>
                 </v-card-title>
                 <v-card-actions>
@@ -37,6 +31,9 @@
           </v-layout>
         </v-container>
       </v-flex>
+      <v-btn fixed dark fab bottom right color="red">
+        <v-icon>add</v-icon>
+      </v-btn>
     </v-layout>
   </v-container>
 </template>
@@ -45,7 +42,20 @@
 export default {
   data() {
     return {
-      videos: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      videos: [
+        {
+          thumbnail: "https://cdn.vuetifyjs.com/images/cards/docks.jpg",
+          headline: "Top 10 Australian beaches",
+          channel: "Mother Earth",
+          uploadDate: "12 Jan 2019"
+        },
+        {
+          thumbnail: "https://picsum.photos/200/300/?image=1012",
+          headline: "Unsplash Issue 12/4/2019",
+          channel: "Unsplash",
+          uploadDate: "12 April 2019"
+        }
+      ]
     };
   }
 };
