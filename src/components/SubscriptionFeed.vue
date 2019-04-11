@@ -24,7 +24,7 @@
                 </v-card-title>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="red">Watch</v-btn>
+                  <v-btn color="red" @click="removeVideo(v.id)">Watched</v-btn>
                 </v-card-actions>
               </v-card>
             </v-flex>
@@ -91,12 +91,16 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-snackbar v-model="snackbar" bottom :timeout="5000">
+        {{ snackbarText }}
+        <v-btn color="red" flat @click="snackbar = false">Close</v-btn>
+      </v-snackbar>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import firebase from '../Firebase';
+import firebase from "../Firebase";
 
 export default {
   data() {
@@ -108,13 +112,15 @@ export default {
       thumbnailUrl: "",
       channel: "",
       headline: "",
-      ref: firebase.firestore().collection('video')
+      snackbar: false,
+      snackbarText: "",
+      ref: firebase.firestore().collection("video")
     };
   },
   created() {
-    this.ref.onSnapshot((querySnapshot) => {
+    this.ref.onSnapshot(querySnapshot => {
       this.videos = [];
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach(doc => {
         const videoData = doc.data();
         this.videos.push({
           id: doc.id,
@@ -131,20 +137,32 @@ export default {
       this.dialog = true;
     },
     uploadVideo() {
-      this.ref.add({
-        headline: this.headline,
-        thumbnail: this.thumbnailUrl,
-        channel: this.channel,
-        uploadDate: this.date
-      }).then((docRef) => {
-      this.headline = "";
-      this.thumbnailUrl = "";
-      this.channel = "";
-      this.date = new Date().toISOString().substr(0, 10);
-      this.dialog = false;
-      }).catch((error) => {
-        alert("Error adding video: ", error);
-      });;
+      this.ref
+        .add({
+          headline: this.headline,
+          thumbnail: this.thumbnailUrl,
+          channel: this.channel,
+          uploadDate: this.date
+        })
+        .then(docRef => {
+          this.headline = "";
+          this.thumbnailUrl = "";
+          this.channel = "";
+          this.date = new Date().toISOString().substr(0, 10);
+          this.dialog = false;
+        })
+        .catch(error => {
+          alert("Error adding video: ", error);
+        });
+    },
+    removeVideo(id) {
+      this.ref
+        .doc(id)
+        .delete()
+        .then(() => {
+          this.snackbarText = `Video id=${id} deleted`;
+          this.snackbar = true;
+        });
     }
   }
 };
